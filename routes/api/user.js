@@ -46,4 +46,35 @@ User.findOne({email:req.body.email})
        }
     });
 });
+// @route POST api/users/login
+// @desc Login users Route / Return jwt
+// @access Public
+
+router.post('/login',(req, res)=>{
+    const email= req.body.email;
+    const password = req.body.password;
+
+    // Encontrar user pelo email
+User.findOne({email})
+    .then(user=>{
+        // Verifica se o usuario existe
+        if(!user){
+            return res.status(404).json({email:'Usuário não encontrado!'});
+        }
+
+        // Verifica a senha
+        bcrypt.compare(password, user.password)
+            .then(isMAtch=>{
+               if(isMAtch){
+                   res.json({msg:'Success'});
+               }else{
+                   return res.status(400).json({password:'Senha incorreta!'});
+               }
+            });
+
+    });
+
+
+
+});
 module.exports = router;
